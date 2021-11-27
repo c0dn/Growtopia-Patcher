@@ -3,6 +3,7 @@ use std::io::{BufReader, ErrorKind, Read, Write};
 use std::net::Ipv4Addr;
 use std::process;
 use clap::{App, Arg};
+use regex::Regex;
 
 fn replace_slice<T>(buf: &mut [T], from: &[T], to: &[T])
     where
@@ -16,7 +17,7 @@ fn replace_slice<T>(buf: &mut [T], from: &[T], to: &[T])
 }
 
 fn main() {
-    let matches = App::new("Growtopia items.dat decoder")
+    let matches = App::new("growtopia.exe patcher")
         .version("1.0")
         .about("This program replace server string in growtopia.exe with ip address given")
         .arg(Arg::with_name("file")
@@ -29,9 +30,19 @@ fn main() {
             .long("ip")
             .takes_value(true)
             .validator(|s| {
-                s.parse::<Ipv4Addr>().map(|_| ()).map_err(|_| String::from("Invalid IP address"))
+                let original_len = "growtopia1.com".len();
+                if s.len() > original_len {
+                    return Err(format!("IP/hostname is too long, max {}", original_len))
+                }
+                let re = Regex::new(r"^(?=.{1,255}$)[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?)*\.?$").unwrap();
+                s.parse::<Ipv4Addr>().map(|_| return ()).map_err(|_| return String::from("Invalid IP address"));
+                if re.is_match(&s) {
+                    Ok(())
+                } else {
+                    Err(String::from("Invalid hostname"))
+                }
             })
-            .help("IP address to replace with (default: 127.0.0.1)"))
+            .help("IP address/hostname to replace with (default: 127.0.0.1)"))
         .arg(Arg::with_name("output")
             .short("o")
             .long("output")
