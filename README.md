@@ -3,7 +3,7 @@ This program patches the game executable, replacing the hardcoded hostnames with
 Default values (if you run the program without arguments): \
 game path: growtopia.exe \
 output file: patched.exe \
-replaced ip: 127.0.0.1 \
+replaced ip: 127.0.0.1
 
 ## Usage
 ```commandline
