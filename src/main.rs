@@ -34,12 +34,11 @@ fn main() {
                 if s.len() > original_len {
                     return Err(format!("IP/hostname is too long, max {}", original_len))
                 }
-                let re = Regex::new(r"^(?=.{1,255}$)[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?)*\.?$").unwrap();
-                s.parse::<Ipv4Addr>().map(|_| return ()).map_err(|_| return String::from("Invalid IP address"));
+                let re = Regex::new(r"^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$").unwrap();
                 if re.is_match(&s) {
                     Ok(())
                 } else {
-                    Err(String::from("Invalid hostname"))
+                    s.parse::<Ipv4Addr>().map(|_| ()).map_err(|_| String::from("Invalid hostname"))
                 }
             })
             .help("IP address/hostname to replace with (default: 127.0.0.1)"))
